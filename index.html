@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acta de Reunión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & variables ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:        #eef2f7;
+  --surface:   #ffffff;
+  --border:    #dce3ed;
+  --pri:       #1a56db;
+  --pri-dk:    #0f2d6b;
+  --pri-lt:    #e8f0fe;
+  --accent:    #0ea5e9;
+  --text:      #1e293b;
+  --muted:     #64748b;
+  --danger:    #dc2626;
+  --success:   #16a34a;
+  --warn:      #d97706;
+  --r:         10px;
+  --sh:        0 2px 10px rgba(0,0,0,.07);
+  --font:      'DM Sans', sans-serif;
+  --font-d:    'DM Serif Display', serif;
+}
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.hdr {
+  background: linear-gradient(135deg, var(--pri-dk) 0%, var(--pri) 55%, var(--accent) 100%);
+  color: #fff;
+  padding: 30px 20px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hdr::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(255,255,255,.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hdr-badge {
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 2px 14px;
+  font-size: .72em;
+  font-weight: 700;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.hdr h1 { font-family: var(--font-d); font-size: 2em; line-height: 1.15; margin-bottom: 6px; }
+.hdr p  { font-size: .84em; opacity: .8; }
+
+/* ── Layout ── */
+.wrap {
+  max-width: 860px;
+  margin: -22px auto 48px;
+  padding: 0 14px;
+}
+
+/* ── Banner configuración ── */
+.cfg-banner {
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  border-radius: var(--r);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  font-size: .82em;
+  color: #92400e;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.cfg-banner b { display: block; margin-bottom: 3px; font-size: 1.05em; }
+.cfg-banner code {
+  background: rgba(0,0,0,.07); border-radius: 4px;
+  padding: 1px 6px; font-size: .95em; word-break: break-all;
+}
+.cfg-close {
+  margin-left: auto; flex-shrink: 0;
+  background: none; border: none;
+  cursor: pointer; font-size: 1.2em;
+  color: #92400e; padding: 0 4px;
+}
+
+/* ── Secciones ── */
+.sec {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  box-shadow: var(--sh);
+}
+.sec-title {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 700; font-size: .8em;
+  color: var(--pri); text-transform: uppercase; letter-spacing: .6px;
+  padding-bottom: 11px; margin-bottom: 15px;
+  border-bottom: 2px solid var(--pri-lt);
+}
+.sec-title .n {
+  width: 23px; height: 23px; border-radius: 50%;
+  background: var(--pri); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82em; font-weight: 800; flex-shrink: 0;
+}
+.sec-sub {
+  font-size: .78em; color: var(--muted);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+
+/* ── Grid de campos ── */
+.row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.row:last-child { margin-bottom: 0; }
+.f  { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
+.f2 { min-width: 240px; }
+.f3 { min-width: 360px; }
+.ff { flex: 0 0 100%; }
+
+label {
+  font-size: .74em; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .45px;
+}
+label .req { color: var(--danger); margin-left: 2px; }
+
+input[type=text], input[type=date], input[type=time], select, textarea {
+  border: 1.5px solid var(--border); border-radius: 7px;
+  padding: 8px 11px; font-size: .9em;
+  color: var(--text); background: #fff;
+  font-family: var(--font); width: 100%;
+  transition: border-color .18s, box-shadow .18s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--pri);
+  box-shadow: 0 0 0 3px rgba(26,86,219,.11);
+}
+textarea { resize: vertical; min-height: 90px; }
+select {
+  appearance: none; cursor: pointer; padding-right: 30px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center;
+}
+
+/* ── Textarea + micrófono ── */
+.ta-wrap { position: relative; }
+.ta-wrap textarea { padding-right: 46px; }
+.btn-mic {
+  position: absolute; top: 8px; right: 8px;
+  width: 30px; height: 30px;
+  border: none; border-radius: 50%;
+  background: var(--pri-lt); cursor: pointer;
+  font-size: 15px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .1s;
+}
+.btn-mic:hover { background: #c7d7fd; transform: scale(1.08); }
+.btn-mic.on {
+  background: var(--danger);
+  animation: mic-pulse .65s ease-in-out infinite alternate;
+}
+@keyframes mic-pulse {
+  from { box-shadow: 0 0 0 2px rgba(220,38,38,.3); }
+  to   { box-shadow: 0 0 0 9px rgba(220,38,38,.04); }
+}
+
+/* ── Prioridad ── */
+.pri-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+.pri-btn {
+  padding: 4px 13px; border-radius: 14px;
+  border: 1.5px solid var(--border);
+  cursor: pointer; font-size: .78em; font-weight: 700;
+  background: #fff; transition: all .15s;
+  user-select: none; font-family: var(--font);
+}
+.pri-btn.alta  { color: #b91c1c; }
+.pri-btn.media { color: #c2410c; }
+.pri-btn.baja  { color: #15803d; }
+.pri-btn.alta.on  { background: #fee2e2; border-color: #ef4444; }
+.pri-btn.media.on { background: #ffedd5; border-color: #f97316; }
+.pri-btn.baja.on  { background: #dcfce7; border-color: #22c55e; }
+
+/* ── Filas dinámicas ── */
+.dyn-item {
+  background: #f8fafc; border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  margin-bottom: 9px;
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+}
+.dyn-item .f { flex: 1; min-width: 110px; }
+.btn-del {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border: none; border-radius: 50%;
+  background: #fee2e2; color: var(--danger);
+  cursor: pointer; font-size: 13px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  align-self: flex-end;
+  transition: background .15s;
+}
+.btn-del:hover { background: #fca5a5; }
+.btn-add {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #f0fdf4; border: 1.5px dashed #22c55e;
+  border-radius: 20px; padding: 5px 15px;
+  cursor: pointer; color: #15803d;
+  font-size: .8em; font-weight: 700; margin-top: 4px;
+  font-family: var(--font);
+  transition: background .2s;
+}
+.btn-add:hover { background: #dcfce7; }
+
+/* ── Botón guardar ── */
+.btn-save {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pri) 0%, var(--pri-dk) 100%);
+  color: #fff; border: none; border-radius: 9px;
+  padding: 14px; font-size: .97em; font-weight: 700;
+  cursor: pointer; font-family: var(--font);
+  box-shadow: 0 4px 16px rgba(26,86,219,.28);
+  transition: opacity .2s, transform .1s;
+}
+.btn-save:hover  { opacity: .9; transform: translateY(-1px); }
+.btn-save:active { transform: none; }
+.btn-save:disabled { opacity: .5; cursor: default; transform: none; }
+
+/* ── Alertas ── */
+.alert {
+  margin-top: 12px; padding: 12px 16px;
+  border-radius: 8px; font-size: .88em;
+  line-height: 1.6; display: none;
+}
+.alert.ok  { background: #f0fdf4; color: #14532d; border-left: 4px solid #22c55e; }
+.alert.err { background: #fef2f2; color: #7f1d1d; border-left: 4px solid #ef4444; }
+
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .hdr { padding: 22px 14px 34px; }
+  .hdr h1 { font-size: 1.6em; }
+  .sec { padding: 15px 14px; }
+  .f2, .f3 { min-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ▓▓ HEADER ▓▓ -->
+<header class="hdr">
+  <!--
+    ── PERSONALIZA AQUÍ ──────────────────────────────────────
+    Cambia el texto del badge y el título según tu institución
+    ─────────────────────────────────────────────────────────
+  -->
+  <div class="hdr-badge">Tu Institución</div>
+  <h1>📋 Acta de Reunión</h1>
+  <p>Complete el formulario durante la sesión · Los datos se guardan en Google Sheets</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ⚙️ Banner de configuración (desaparece cuando se configura la URL) -->
+  <div class="cfg-banner" id="cfg-banner">
+    <span style="font-size:1.4em;flex-shrink:0">⚙️</span>
+    <div>
+      <b>Paso final: conecta tu Apps Script</b>
+      Edita <code>index.html</code>, busca <code>APPS_SCRIPT_URL</code>
+      y reemplaza el valor con la URL de tu Web App.
+      Este aviso desaparece automáticamente cuando esté configurada.
+    </div>
+    <button class="cfg-close" id="cfg-close" title="Cerrar">✕</button>
+  </div>
+
+  <!-- ① DATOS BÁSICOS ───────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">1</span> Datos básicos de la reunión</div>
+    <div class="row">
+      <div class="f f3">
+        <label>Lugar <span class="req">*</span></label>
+        <input type="text" id="lugar" placeholder="Ciudad · Dependencia · Municipio">
+      </div>
+      <div class="f">
+        <label>Fecha <span class="req">*</span></label>
+        <input type="date" id="fecha">
+      </div>
+    </div>
+    <div class="row">
+      <div class="f">
+        <label>Hora inicio <span class="req">*</span></label>
+        <input type="time" id="hora_inicio">
+      </div>
+      <div class="f">
+        <label>Hora final</label>
+        <input type="time" id="hora_final">
+      </div>
+      <div class="f f2">
+        <label>Tipo de reunión <span class="req">*</span></label>
+        <select id="tipo_reunion">
+          <option value="">— Seleccione —</option>
+          <option>Consejo de Gobierno</option>
+          <option>Comité coordinador de Control Interno</option>
+          <option>Comité técnico</option>
+          <option>Otra</option>
+        </select>
+      </div>
+      <div class="f" id="wrap-otra" style="display:none">
+        <label>¿Cuál?</label>
+        <input type="text" id="otra_cual" placeholder="Ej: Mesa de trabajo…">
+      </div>
+    </div>
+    <div class="row">
+      <div class="f f2">
+        <label>Elaborada por</label>
+        <!--
+          ── PERSONALIZA ──────────────────────────────────
+          Cambia el value por el nombre por defecto de quien
+          suele elaborar las actas (editable en el formulario)
+          ─────────────────────────────────────────────────
+        -->
+        <input type="text" id="elaborada_por" placeholder="Nombre del funcionario responsable" value="">
+      </div>
+    </div>
+  </div>
+
+  <!-- ② CONTENIDO ─────────────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">2</span> Contenido de la reunión</div>
+    <p class="sec-sub">🎤 Toca el ícono de micrófono para dictar — el texto se concatena al existente (requiere Chrome o Edge)</p>
+
+    <div class="row" style="margin-bottom:14px">
+      <div class="f ff">
+        <label>Desarrollo de la reunión</label>
+        <div class="ta-wrap">
+          <textarea id="desarrollo" rows="5"
+            placeholder="Narre lo ocurrido durante la sesión…"></textarea>
+          <button class="btn-mic" id="m_desarrollo" type="button" title="Dictar">🎤</button>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:14px">
+      <div class="f ff">
+        <label>Temas tratados</label>
+        <div class="ta-wrap">
+          <textarea id="temas" rows="4" placeholder="Liste los temas discutidos…"></textarea>
+          <button class="btn-mic" id="m_temas" type="button" title="Dictar">🎤</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="f ff">
+        <label>Compromisos</label>
+        <div class="ta-wrap">
+          <textarea id="compromisos" rows="4" placeholder="Registre los compromisos adquiridos…"></textarea>
+          <button class="btn-mic" id="m_compromisos" type="button" title="Dictar">🎤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ RESPONSABLES ──────────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">3</span> Responsables de compromisos</div>
+    <div id="cont_resp"></div>
+    <button class="btn-add" type="button" id="btn_add_resp">＋ Agregar responsable</button>
+  </div>
+
+  <!-- ④ DECISIONES ───────────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">4</span> Decisiones adoptadas</div>
+    <div class="row">
+      <div class="f ff">
+        <div class="ta-wrap">
+          <textarea id="decisiones" rows="4" placeholder="Registre las decisiones tomadas en la reunión…"></textarea>
+          <button class="btn-mic" id="m_decisiones" type="button" title="Dictar">🎤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ PRÓXIMA REUNIÓN ───────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">5</span> Próxima reunión</div>
+    <div class="row">
+      <div class="f f2">
+        <label>Lugar</label>
+        <input type="text" id="lugar_proxima" placeholder="Ciudad · Dependencia">
+      </div>
+      <div class="f">
+        <label>Fecha</label>
+        <input type="date" id="fecha_proxima">
+      </div>
+      <div class="f">
+        <label>Hora inicio</label>
+        <input type="time" id="hora_proxima">
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ APROBACIÓN ───────────────────────────── -->
+  <div class="sec">
+    <div class="sec-title"><span class="n">6</span> Aprobación — Firmantes</div>
+    <p class="sec-sub">Cada firmante se empareja con el responsable de la misma posición en la sección anterior.</p>
+    <div id="cont_apro"></div>
+    <button class="btn-add" type="button" id="btn_add_apro">＋ Agregar firmante</button>
+  </div>
+
+  <!-- GUARDAR ─────────────────────────────────── -->
+  <div class="sec">
+    <button class="btn-save" id="btn_env" type="button">
+      💾 &nbsp;Guardar Acta en Google Sheets
+    </button>
+    <div class="alert" id="alerta"></div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  ① ÚNICA LÍNEA QUE DEBES EDITAR PARA CONECTAR TU BACKEND
+//  Reemplaza el valor con la URL de tu Web App de Apps Script
+// ════════════════════════════════════════════════════════════
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPwYwJYP48RKINQdUgnCvPkvjlxlR0cq7SNfRjC9JIeABDVacVcuMK91s2I9o0JGcXaA/exec";
+// Ejemplo:
+// var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycb.../exec";
+
+
+// ── Detectar configuración pendiente ─────────────────────────
+(function () {
+  var ok = APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf("script.google.com") !== -1;
+  if (ok) document.getElementById("cfg-banner").style.display = "none";
+  document.getElementById("cfg-close").addEventListener("click", function () {
+    document.getElementById("cfg-banner").style.display = "none";
+  });
+})();
+
+
+// ── Inicializar fecha de hoy ──────────────────────────────────
+document.getElementById("fecha").value = new Date().toISOString().split("T")[0];
+
+
+// ── Tipo de reunión → mostrar/ocultar "¿cuál?" ────────────────
+document.getElementById("tipo_reunion").addEventListener("change", function () {
+  document.getElementById("wrap-otra").style.display =
+    this.value === "Otra" ? "" : "none";
+});
+
+
+// ── Dictado por voz (acumulativo) ─────────────────────────────
+var _rec = null, _btnRec = null;
+
+function toggleVoz(idTA, idBtn) {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert("Reconocimiento de voz no disponible.\nUsa Google Chrome o Microsoft Edge.");
+    return;
+  }
+  var btn = document.getElementById(idBtn);
+
+  // Si hay uno activo, detenerlo
+  if (_rec) {
+    _rec.stop();
+    if (_btnRec) { _btnRec.textContent = "🎤"; _btnRec.classList.remove("on"); }
+    var mismo = (_btnRec === btn);
+    _rec = null; _btnRec = null;
+    if (mismo) return; // era el mismo botón → solo detener
+  }
+
+  var ta  = document.getElementById(idTA);
+  var rec = new SR();
+  rec.lang            = "es-CO";
+  rec.continuous      = true;
+  rec.interimResults  = false;
+
+  rec.onresult = function (e) {
+    var txt = "";
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) txt += e.results[i][0].transcript + " ";
+    }
+    if (txt.trim()) {
+      ta.value += (ta.value.trim() ? "\n" : "") + txt.trim();
+      ta.scrollTop = ta.scrollHeight;
+    }
+  };
+  rec.onerror = function () { resetMic(btn); };
+  rec.onend   = function () { resetMic(btn); };
+
+  function resetMic(b) {
+    b.textContent = "🎤"; b.classList.remove("on");
+    _rec = null; _btnRec = null;
+  }
+
+  rec.start();
+  btn.textContent = "⏹"; btn.classList.add("on");
+  _rec = rec; _btnRec = btn;
+}
+
+["desarrollo", "temas", "compromisos", "decisiones"].forEach(function (id) {
+  document.getElementById("m_" + id).addEventListener("click", function () {
+    toggleVoz(id, "m_" + id);
+  });
+});
+
+
+// ── Responsables dinámicos ────────────────────────────────────
+function addResp(nom, pri, fec) {
+  var d = document.createElement("div");
+  d.className = "dyn-item";
+  d.innerHTML =
+    '<div class="f f2"><label>Responsable</label>' +
+    '<input type="text" class="rn" placeholder="Nombre completo" value="' + (nom || "") + '"></div>' +
+    '<div class="f"><label>Prioridad</label><div class="pri-group">' +
+    '<span class="pri-btn alta '  + (pri === "alta"  ? "on" : "") + '">Alta</span>'  +
+    '<span class="pri-btn media ' + (pri === "media" ? "on" : "") + '">Media</span>' +
+    '<span class="pri-btn baja '  + (pri === "baja"  ? "on" : "") + '">Baja</span>'  +
+    '</div></div>' +
+    '<div class="f"><label>Fecha límite</label>' +
+    '<input type="date" class="rf" value="' + (fec || "") + '"></div>' +
+    '<button class="btn-del" type="button" title="Quitar">✕</button>';
+  d.querySelector(".btn-del").addEventListener("click", function () { d.remove(); });
+  d.querySelectorAll(".pri-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.closest(".pri-group").querySelectorAll(".pri-btn")
+        .forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+    });
+  });
+  document.getElementById("cont_resp").appendChild(d);
+}
+
+
+// ── Aprobadores dinámicos ─────────────────────────────────────
+function addApro(nom, ent) {
+  var d = document.createElement("div");
+  d.className = "dyn-item";
+  d.innerHTML =
+    '<div class="f f2"><label>Responsable aprobación</label>' +
+    '<input type="text" class="an" placeholder="Nombre completo" value="' + (nom || "") + '"></div>' +
+    '<div class="f f2"><label>Entidad / Cargo</label>' +
+    '<input type="text" class="ae" placeholder="Entidad u organización" value="' + (ent || "") + '"></div>' +
+    '<button class="btn-del" type="button" title="Quitar">✕</button>';
+  d.querySelector(".btn-del").addEventListener("click", function () { d.remove(); });
+  document.getElementById("cont_apro").appendChild(d);
+}
+
+document.getElementById("btn_add_resp").addEventListener("click", function () { addResp(); });
+document.getElementById("btn_add_apro").addEventListener("click", function () { addApro(); });
+addResp(); // fila inicial
+addApro(); // fila inicial
+
+
+// ── Recopilar todos los datos del formulario ──────────────────
+function getDatos() {
+  var tipo = document.getElementById("tipo_reunion").value;
+  var otra = document.getElementById("otra_cual").value.trim();
+  var tipoFinal = (tipo === "Otra" && otra) ? ("Otra: " + otra) : tipo;
+
+  var responsables = [];
+  document.querySelectorAll("#cont_resp .dyn-item").forEach(function (d) {
+    var nom = d.querySelector(".rn").value.trim();
+    var sel = d.querySelector(".pri-btn.on");
+    var pri = sel ? sel.textContent.trim().toLowerCase() : "";
+    var fec = d.querySelector(".rf").value;
+    if (nom || pri || fec) responsables.push({ nombre: nom, prioridad: pri, fecha_limite: fec });
+  });
+
+  var aprobadores = [];
+  document.querySelectorAll("#cont_apro .dyn-item").forEach(function (d) {
+    var nom = d.querySelector(".an").value.trim();
+    var ent = d.querySelector(".ae").value.trim();
+    if (nom || ent) aprobadores.push({ nombre: nom, entidad: ent });
+  });
+
+  return {
+    lugar:         document.getElementById("lugar").value.trim(),
+    fecha:         document.getElementById("fecha").value,
+    hora_inicio:   document.getElementById("hora_inicio").value,
+    hora_final:    document.getElementById("hora_final").value,
+    tipo_reunion:  tipoFinal,
+    otra_cual:     otra,
+    elaborada_por: document.getElementById("elaborada_por").value.trim(),
+    desarrollo:    document.getElementById("desarrollo").value.trim(),
+    temas:         document.getElementById("temas").value.trim(),
+    compromisos:   document.getElementById("compromisos").value.trim(),
+    decisiones:    document.getElementById("decisiones").value.trim(),
+    lugar_proxima: document.getElementById("lugar_proxima").value.trim(),
+    fecha_proxima: document.getElementById("fecha_proxima").value,
+    hora_proxima:  document.getElementById("hora_proxima").value,
+    responsables:  responsables,
+    aprobadores:   aprobadores
+  };
+}
+
+
+// ── Mostrar alerta ────────────────────────────────────────────
+function alerta(msg, ok) {
+  var el = document.getElementById("alerta");
+  el.textContent = msg;
+  el.className   = "alert " + (ok ? "ok" : "err");
+  el.style.display = "block";
+  setTimeout(function () {
+    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, 80);
+}
+
+
+// ── Enviar al Apps Script ─────────────────────────────────────
+document.getElementById("btn_env").addEventListener("click", async function () {
+  var datos = getDatos();
+
+  // Validación mínima
+  if (!datos.lugar || !datos.fecha || !datos.hora_inicio || !datos.tipo_reunion) {
+    alerta("⚠️  Completa los campos obligatorios: Lugar, Fecha, Hora inicio y Tipo de reunión.", false);
+    return;
+  }
+
+  // Verificar configuración
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("script.google.com") === -1) {
+    alerta("⚙️  Falta configurar la URL del Apps Script en el archivo index.html.", false);
+    return;
+  }
+
+  var btn = document.getElementById("btn_env");
+  btn.disabled    = true;
+  btn.textContent = "⏳  Guardando en Google Sheets…";
+
+  try {
+    // Apps Script requiere no-cors cuando se invoca desde un dominio externo;
+    // usamos fetch con mode:'no-cors' y leemos la respuesta vía un iframe trick
+    // o simplemente con cors ya que Apps Script lo permite cuando el acceso es "Cualquiera"
+    var res = await fetch(APPS_SCRIPT_URL, {
+      method:  "POST",
+      headers: { "Content-Type": "text/plain" }, // evita preflight CORS
+      body:    JSON.stringify(datos)
+    });
+
+    var j = await res.json();
+
+    if (j.ok) {
+      alerta(
+        "✅  Acta guardada correctamente en la hoja "" + j.hoja + "" · " +
+        j.filas + " fila" + (j.filas > 1 ? "s" : "") + " · " + j.timestamp,
+        true
+      );
+    } else {
+      alerta("❌  Error al guardar: " + (j.error || "respuesta inesperada"), false);
+    }
+
+  } catch (err) {
+    alerta(
+      "❌  No se pudo conectar con el servidor.\n" +
+      "Verifica que la URL del Apps Script sea correcta y que el acceso sea 'Cualquier usuario'.\n" +
+      "Detalle: " + err.message,
+      false
+    );
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = "💾  Guardar Acta en Google Sheets";
+  }
+});
+</script>
+</body>
+</html>
