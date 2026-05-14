@@ -635,31 +635,47 @@ document.getElementById("btn_env").addEventListener("click", async function () {
   btn.textContent = "⏳  Guardando en Google Sheets…";
 
   try {
-    // Apps Script requiere no-cors cuando se invoca desde un dominio externo;
-    // usamos fetch con mode:'no-cors' y leemos la respuesta vía un iframe trick
-    // o simplemente con cors ya que Apps Script lo permite cuando el acceso es "Cualquiera"
+    // Intento 1: fetch normal con lectura de respuesta
     var res = await fetch(APPS_SCRIPT_URL, {
       method:  "POST",
-      headers: { "Content-Type": "text/plain" }, // evita preflight CORS
-      body:    JSON.stringify(datos)
+      headers: { "Content-Type": "text/plain" },
+      body:    JSON.stringify(datos),
+      redirect: "follow"
     });
 
-    var j = await res.json();
+    var j;
+    try { j = await res.json(); } catch (_) { j = null; }
 
-    if (j.ok) {
+    if (j && j.ok) {
       alerta(
-        "✅  Acta guardada correctamente en la hoja "" + j.hoja + "" · " +
+        "✅  Acta guardada en la hoja \"" + j.hoja + "\" · " +
         j.filas + " fila" + (j.filas > 1 ? "s" : "") + " · " + j.timestamp,
         true
       );
+    } else if (j && j.error) {
+      alerta("❌  Error en el servidor: " + j.error, false);
     } else {
-      alerta("❌  Error al guardar: " + (j.error || "respuesta inesperada"), false);
+      // Respuesta opaca (CORS) → reenviar en modo no-cors como fallback
+      // El dato SÍ llega al Apps Script aunque no podamos leer la respuesta
+      await fetch(APPS_SCRIPT_URL, {
+        method:  "POST",
+        mode:    "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body:    JSON.stringify(datos)
+      });
+      alerta(
+        "✅  Datos enviados. Verifica en Google Sheets que el acta quedó registrada.\n" +
+        "(El navegador bloqueó la confirmación del servidor por política CORS — " +
+        "asegúrate de que el Apps Script esté desplegado con acceso 'Cualquier usuario'.)",
+        true
+      );
     }
 
   } catch (err) {
     alerta(
-      "❌  No se pudo conectar con el servidor.\n" +
-      "Verifica que la URL del Apps Script sea correcta y que el acceso sea 'Cualquier usuario'.\n" +
+      "❌  No se pudo conectar.\n" +
+      "• Verifica que la URL del Apps Script sea correcta.\n" +
+      "• En Apps Script: Implementar → Nueva implementación → Acceso: Cualquier usuario.\n" +
       "Detalle: " + err.message,
       false
     );
