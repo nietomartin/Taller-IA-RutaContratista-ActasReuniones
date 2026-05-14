@@ -635,14 +635,13 @@ document.getElementById("btn_env").addEventListener("click", async function () {
   btn.textContent = "⏳  Guardando en Google Sheets…";
 
   try {
-    // Intento 1: fetch normal con lectura de respuesta
+    // Intento 1: fetch normal — si Apps Script devuelve CORS headers se puede leer la respuesta
     var res = await fetch(APPS_SCRIPT_URL, {
-      method:  "POST",
-      headers: { "Content-Type": "text/plain" },
-      body:    JSON.stringify(datos),
+      method:   "POST",
+      headers:  { "Content-Type": "text/plain" },
+      body:     JSON.stringify(datos),
       redirect: "follow"
     });
-
     var j;
     try { j = await res.json(); } catch (_) { j = null; }
 
@@ -655,8 +654,13 @@ document.getElementById("btn_env").addEventListener("click", async function () {
     } else if (j && j.error) {
       alerta("❌  Error en el servidor: " + j.error, false);
     } else {
-      // Respuesta opaca (CORS) → reenviar en modo no-cors como fallback
-      // El dato SÍ llega al Apps Script aunque no podamos leer la respuesta
+      alerta("⚠️  Respuesta inesperada del servidor. Revisa el Apps Script.", false);
+    }
+
+  } catch (_corsErr) {
+    // "Failed to fetch" = CORS bloqueó la respuesta.
+    // Reintento con no-cors: el dato SÍ llega al Apps Script aunque no se pueda leer la respuesta.
+    try {
       await fetch(APPS_SCRIPT_URL, {
         method:  "POST",
         mode:    "no-cors",
@@ -665,20 +669,18 @@ document.getElementById("btn_env").addEventListener("click", async function () {
       });
       alerta(
         "✅  Datos enviados. Verifica en Google Sheets que el acta quedó registrada.\n" +
-        "(El navegador bloqueó la confirmación del servidor por política CORS — " +
-        "asegúrate de que el Apps Script esté desplegado con acceso 'Cualquier usuario'.)",
+        "Para ver confirmación directa: en Apps Script → Implementar → Acceso: 'Cualquier usuario'.",
         true
       );
+    } catch (netErr) {
+      alerta(
+        "❌  No se pudo conectar con el servidor.\n" +
+        "• Verifica que la URL del Apps Script sea correcta.\n" +
+        "• En Apps Script: Implementar → Nueva implementación → Acceso: Cualquier usuario.\n" +
+        "Detalle: " + netErr.message,
+        false
+      );
     }
-
-  } catch (err) {
-    alerta(
-      "❌  No se pudo conectar.\n" +
-      "• Verifica que la URL del Apps Script sea correcta.\n" +
-      "• En Apps Script: Implementar → Nueva implementación → Acceso: Cualquier usuario.\n" +
-      "Detalle: " + err.message,
-      false
-    );
   } finally {
     btn.disabled    = false;
     btn.textContent = "💾  Guardar Acta en Google Sheets";
