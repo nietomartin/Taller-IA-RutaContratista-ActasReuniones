@@ -420,6 +420,13 @@ select {
     <button class="btn-save" id="btn_env" type="button">
       💾 &nbsp;Guardar Acta en Google Sheets
     </button>
+    <div style="text-align:center;margin-top:10px">
+      <button id="btn_test" type="button"
+        style="background:none;border:none;color:var(--muted);font-size:.78em;
+               cursor:pointer;text-decoration:underline;font-family:var(--font)">
+        Probar conexión con el servidor
+      </button>
+    </div>
     <div class="alert" id="alerta"></div>
   </div>
 
@@ -555,6 +562,34 @@ function addApro(nom, ent) {
 
 document.getElementById("btn_add_resp").addEventListener("click", function () { addResp(); });
 document.getElementById("btn_add_apro").addEventListener("click", function () { addApro(); });
+
+// ── Probar conexión (GET) ─────────────────────────────────────
+document.getElementById("btn_test").addEventListener("click", async function () {
+  var btn = this;
+  btn.textContent = "⏳ Probando…";
+  btn.style.pointerEvents = "none";
+  try {
+    var res = await fetch(APPS_SCRIPT_URL, { method: "GET" });
+    var j   = await res.json();
+    if (j && j.status === "activo") {
+      alerta("✅  Conexión OK — Apps Script activo (versión " + (j.version || "?") + ")", true);
+    } else {
+      alerta("⚠️  El servidor respondió pero con formato inesperado: " + JSON.stringify(j), false);
+    }
+  } catch (e) {
+    alerta(
+      "❌  No se pudo conectar al Apps Script.\n" +
+      "• Confirma que la URL en index.html sea la correcta.\n" +
+      "• Si creaste una nueva implementación, copia su nueva URL.\n" +
+      "• Asegúrate de abrir el formulario desde GitHub Pages.\n" +
+      "Detalle: " + e.message,
+      false
+    );
+  } finally {
+    btn.textContent  = "Probar conexión con el servidor";
+    btn.style.pointerEvents = "";
+  }
+});
 addResp(); // fila inicial
 addApro(); // fila inicial
 
@@ -635,52 +670,27 @@ document.getElementById("btn_env").addEventListener("click", async function () {
   btn.textContent = "⏳  Guardando en Google Sheets…";
 
   try {
-    // Intento 1: fetch normal — si Apps Script devuelve CORS headers se puede leer la respuesta
-    var res = await fetch(APPS_SCRIPT_URL, {
-      method:   "POST",
-      headers:  { "Content-Type": "text/plain" },
-      body:     JSON.stringify(datos),
-      redirect: "follow"
+    // Siempre usamos no-cors: evita errores CORS y el dato llega correctamente al Apps Script.
+    // La respuesta es opaca (no se puede leer), pero los datos sí se guardan en la hoja.
+    await fetch(APPS_SCRIPT_URL, {
+      method:  "POST",
+      mode:    "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body:    JSON.stringify(datos)
     });
-    var j;
-    try { j = await res.json(); } catch (_) { j = null; }
-
-    if (j && j.ok) {
-      alerta(
-        "✅  Acta guardada en la hoja \"" + j.hoja + "\" · " +
-        j.filas + " fila" + (j.filas > 1 ? "s" : "") + " · " + j.timestamp,
-        true
-      );
-    } else if (j && j.error) {
-      alerta("❌  Error en el servidor: " + j.error, false);
-    } else {
-      alerta("⚠️  Respuesta inesperada del servidor. Revisa el Apps Script.", false);
-    }
-
-  } catch (_corsErr) {
-    // "Failed to fetch" = CORS bloqueó la respuesta.
-    // Reintento con no-cors: el dato SÍ llega al Apps Script aunque no se pueda leer la respuesta.
-    try {
-      await fetch(APPS_SCRIPT_URL, {
-        method:  "POST",
-        mode:    "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body:    JSON.stringify(datos)
-      });
-      alerta(
-        "✅  Datos enviados. Verifica en Google Sheets que el acta quedó registrada.\n" +
-        "Para ver confirmación directa: en Apps Script → Implementar → Acceso: 'Cualquier usuario'.",
-        true
-      );
-    } catch (netErr) {
-      alerta(
-        "❌  No se pudo conectar con el servidor.\n" +
-        "• Verifica que la URL del Apps Script sea correcta.\n" +
-        "• En Apps Script: Implementar → Nueva implementación → Acceso: Cualquier usuario.\n" +
-        "Detalle: " + netErr.message,
-        false
-      );
-    }
+    alerta(
+      "✅  Acta enviada al servidor. Revisa tu Google Sheets para confirmar que quedó registrada.\n" +
+      "Si no aparece, usa 'Probar conexión' para verificar que el Apps Script esté activo.",
+      true
+    );
+  } catch (err) {
+    alerta(
+      "❌  Error de red — no se pudo enviar.\n" +
+      "• Asegúrate de abrir este formulario desde GitHub Pages (no desde un archivo local).\n" +
+      "• Verifica tu conexión a internet.\n" +
+      "Detalle: " + err.message,
+      false
+    );
   } finally {
     btn.disabled    = false;
     btn.textContent = "💾  Guardar Acta en Google Sheets";
